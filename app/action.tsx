@@ -1,6 +1,17 @@
 import { OpenAI } from 'openai';
 import { createAI, getMutableAIState, render } from 'ai/rsc';
 import { z } from 'zod';
+import { ReactNode } from 'react';
+
+interface FlightInfo {
+  readonly flightNumber: string;
+  readonly departure: string;
+  readonly arrival: string;
+}
+
+interface FlightCardProps {
+  readonly flightInfo: FlightInfo;
+}
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -13,7 +24,7 @@ function Spinner() {
 }
 
 // An example of a flight card component.
-function FlightCard({ flightInfo }) {
+function FlightCard({ flightInfo }: FlightCardProps) {
   return (
     <div>
       <h2>Flight Information</h2>
@@ -33,7 +44,10 @@ async function getFlightInfo(flightNumber: string) {
   };
 }
 
-async function submitUserMessage(userInput: string) {
+async function submitUserMessage(userInput: string): Promise<{
+  id: number;
+  display: ReactNode;
+}> {
   'use server';
 
   const aiState = getMutableAIState<typeof AI>();
